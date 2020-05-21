@@ -12,21 +12,21 @@ class Token
 
     private function store($shop,$token)
     {
-        $data=array('shop_url'=>$shop,'token'=>$token);
+        $data=array('shop_url'=>$shop,'token'=>$token,'is_active'=>true);
         $id=$this->db->insert('shop_tokens',$data);
         return $id;
     }
     private function update($shop,$token){
-        $data=array('token'=>$token);
+        $data=array('token'=>$token,'is_active'=>true);
         $this->db->where('shop_url',$shop);
         return $this->db->update('shop_tokens',$data);
     }
-    private function token_exist($shop,$token){
+    private function token_exist($shop){
         $this->db->where('shop_url',$shop);
         return $this->db->getValue('shop_tokens','count(*)')>0;
     }
     public function store_token($shop,$token){
-        if ($this->token_exist($shop,$token)){
+        if ($this->token_exist($shop)){
            return $this->update($shop,$token);
         }else{
             return $this->store($shop,$token);
