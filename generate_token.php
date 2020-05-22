@@ -1,9 +1,8 @@
 <?php
 
 require_once 'request/post.php';
-require_once 'db_handlers/db.php';
 require_once 'db_handlers/token/token.php';
-
+require_once 'constants.php';
 $api_key='bd2e0dd0801b0b7f726a1525188d32d8';
 $api_secret='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';
 
@@ -45,7 +44,7 @@ if(hash_equals($hmac,$computed_hmac)){
             'name'=>'test_recipient',
             'price'=>100.0,
             "test"=>true,
-            "return_url"=> "http://shopifytest.iserver.purelogics.net/test_app/free_trial.php",
+            "return_url"=> ENVIRONMENT_URL."free_trial.php",
         ));
     $resp=curlHttpApiRequest('POST',$url.'/admin/api/2020-04/recurring_application_charges.json','',$payload,$headers);
     $resp=json_decode($resp,true);

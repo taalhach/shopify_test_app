@@ -1,5 +1,6 @@
 <?php
 require "vendor/autoload.php";
+require_once 'ShopifyClient.php';
 function make_post_request($base_uri,$url,$options=null){
     $client = new \GuzzleHttp\Client(["base_uri" => $base_uri]);
     $response = $client->post($url, $options);
@@ -63,8 +64,6 @@ function curlSetopts($ch, $method, $payload, $request_headers)
         curl_setopt ($ch, CURLOPT_POSTFIELDS, json_encode($payload));
     }
 }
-class ShopifyCurlException extends Exception{
-}
 
 
 //curlHttpApiRequest('POST','https://bd2e0dd0801b0b7f726a1525188d32d8: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@my-personal-first-store.myshopify.com/admin/api/2020-04/webhooks.json',''
@@ -79,17 +78,17 @@ class ShopifyCurlException extends Exception{
 //        "Content-Type: application/json"
 //    )
 //);
-curlHttpApiRequest('POST','https://bd2e0dd0801b0b7f726a1525188d32d8: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@my-personal-first-store.myshopify.com/admin/api/2020-04/webhooks.json',''
-    ,array(
-        'recurring_application_charge'=>array(
-            'name'=>'test_recipient',
-            'price'=>100.0,
-            "test"=>true,
-            "return_url"=> "http://super-duper.shopifyapps.com",
-        )),
-    array(
-        "X-Shopify-Access-Token: " . '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',
-        "Accept: application/json",
-        "Content-Type: application/json"
-    )
-);
+//curlHttpApiRequest('POST','https://bd2e0dd0801b0b7f726a1525188d32d8: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@my-personal-first-store.myshopify.com/admin/api/2020-04/webhooks.json',''
+//    ,array(
+//        'recurring_application_charge'=>array(
+//            'name'=>'test_recipient',
+//            'price'=>100.0,
+//            "test"=>true,
+//            "return_url"=> "http://super-duper.shopifyapps.com",
+//        )),
+//    array(
+//        "X-Shopify-Access-Token: " . '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',
+//        "Accept: application/json",
+//        "Content-Type: application/json"
+//    )
+//);
