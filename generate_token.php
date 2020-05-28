@@ -22,21 +22,33 @@ if(hash_equals($hmac,$computed_hmac)){
         echo 'internal server error';
         http_response_code(500);
     }
-    //TODO add webhook registration here
-    $payload=['webhook'=>['topic'=>'app/uninstalled','address'=>'https://shopifytest.iserver.purelogics.net/test_app/uninstall.php','format'=>'json']];
+
     $headers=array(
-            "X-Shopify-Access-Token: " . $response['access_token'],
-            "Accept: application/json",
-            "Content-Type: application/json"
-        );
+        "X-Shopify-Access-Token: " . $response['access_token'],
+        "Accept: application/json",
+        "Content-Type: application/json"
+    );
+
     $url='https://'.API_KEY.':'.API_SECRET.'@'. $params['shop'];
+
+
+    $payload=[
+        'webhook'=>
+            [
+                'topic'=> 'app/uninstalled',
+                'address'=>'https://shopifytest.iserver.purelogics.net/test_app/uninstall.php?shop='.$params['shop'],
+                'format'=>'json'
+            ]
+    ];
     $resp=curlHttpApiRequest('POST',$url.'/admin/api/2020-04/webhooks.json','',$payload,$headers);
     $resp=json_decode($resp,true);
     if (isset($resp['errors'])){
         echo '<br> app/uninstall webhook is not subscribed error: '.var_dump($resp['errors']).'<br>';
+        var_dump($resp);
         die();
     }
     echo '<br> app/uninstall webhook subscribed <br>';
+
     $payload=array(
         'application_charge'=>array(
             'name'=>'Spartan charges',
@@ -47,11 +59,12 @@ if(hash_equals($hmac,$computed_hmac)){
     $resp=curlHttpApiRequest('POST',$url.'/admin/api/2020-04/application_charges.json','',$payload,$headers);
     $resp=json_decode($resp,true);
     if (isset($resp['errors'])){
-        echo '<br> app/uninstall webhook is not subscribed error: '.var_dump($resp['errors']).'<br>';
+        echo '<br> application did not go through time charges, error: '.var_dump($resp['errors']).'<br>';
         die();
     }
-    var_dump($resp);
+
     echo $resp['application_charge']['confirmation_url'];
+    var_dump($resp);
     header('Location: '.$resp['application_charge']['confirmation_url']);
 }else{
     echo 'invalid hmac';
