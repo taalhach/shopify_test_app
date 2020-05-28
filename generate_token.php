@@ -38,21 +38,21 @@ if(hash_equals($hmac,$computed_hmac)){
     }
     echo '<br> app/uninstall webhook subscribed <br>';
     $payload=array(
-        'recurring_application_charge'=>array(
-            'name'=>'test_recipient',
+        'application_charge'=>array(
+            'name'=>'Spartan charges',
             'price'=>100.0,
             "test"=>true,
             "return_url"=> ENVIRONMENT_URL."free_trial.php",
         ));
-    $resp=curlHttpApiRequest('POST',$url.'/admin/api/2020-04/recurring_application_charges.json','',$payload,$headers);
+    $resp=curlHttpApiRequest('POST',$url.'/admin/api/2020-04/application_charges.json','',$payload,$headers);
     $resp=json_decode($resp,true);
     if (isset($resp['errors'])){
         echo '<br> app/uninstall webhook is not subscribed error: '.var_dump($resp['errors']).'<br>';
         die();
     }
     var_dump($resp);
-    echo $resp['recurring_application_charge']['confirmation_url'];
-    header('Location: '.$resp['recurring_application_charge']['confirmation_url']);
+    echo $resp['application_charge']['confirmation_url'];
+    header('Location: '.$resp['application_charge']['confirmation_url']);
 }else{
     echo 'invalid hmac';
 }
