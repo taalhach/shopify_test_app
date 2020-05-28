@@ -4,7 +4,8 @@ require_once 'constants.php';
 $query='SELECT id,shop_url,token from shop_tokens where is_active =1;';
 $shopsData=$db->query($query);
 $date = date('Y-m-d H:i:s');
-
+$dbCount=0;
+$mtfCount=0;
 if (count($shopsData)>0){
     foreach ($shopsData as $shop){
         try {
@@ -40,6 +41,25 @@ if (count($shopsData)>0){
                     }
                     if (count($products)>0){
                         foreach ($products as $product){
+                            $metadata=$sc->call('GET','/admin/api/2020-04/products/'.$product['id'].'/metafields.json');
+//                            print_r($metadata);
+                            $mtdExists=false;
+                            foreach ($metadata as $mtd){
+                                if ($mtd['key']==TAG){
+                                    $mtdExists=true;
+                                }
+                            }
+                            if (!$mtdExists){
+//                                echo 'going to request <br>';
+                                $metadata=$sc->call('POST','/admin/api/2020-04/products/'.$product['id'].'/metafields.json',array('metafield'=>array(
+                                    'namespace'=>'custom_namespace',
+                                    'key'=>TAG,
+                                    'value'=>TAG,
+                                    'value_type'=>'string'
+                                )));
+                                $mtfCount++;
+//                                print_r($metadata);
+                            }
                             $variants=count($product['variants']);
                             $db->where('product_id',$product['id']);
                             $db->where('shop_id',$shop['shop_url']);
@@ -81,7 +101,7 @@ if (count($shopsData)>0){
                                             'product_id' => $product['id'],
                                             'product_title' => $product['title'] . ' ' . $product["variants"][$i]['title'],
                                             'product_sku' => $product["variants"][$i]['sku'],
-                                            'variant_id' => $product["variants"][$i]['id'],
+                                            'variant_iwd' => $product["variants"][$i]['id'],
                                             'product_image' => $image,
                                             'shop_id' => $shop['id'],
                                             'product_price' => $product["variants"][$i]['price'],
@@ -95,6 +115,7 @@ if (count($shopsData)>0){
                                             'is_published' => $published
                                         );
                                         $db->insert(TABLE_SHOP_PRODUCTS, $nProd);
+                                        $dbCount++;
                                     }
                                 }
 
@@ -112,3 +133,4 @@ if (count($shopsData)>0){
 }
 
 
+echo "$dbCount products are stored <br> $mtfCount products attached with matafields";
